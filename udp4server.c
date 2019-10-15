@@ -49,7 +49,8 @@ int main(void)
 		fprintf(stdout, "received %ld bytes: %s\n", nread, recvbuf);
 
 		snprintf(sendbuf, sizeof(sendbuf), "Hi, %s", recvbuf);
-		if ((ret = sendto(sockfd, sendbuf, strlen(sendbuf), 0, (struct sockaddr *)&peeraddr, peerlen)) == -1) {
+		if ((ret = sendto(sockfd, sendbuf, strlen(sendbuf), 0,
+				(struct sockaddr *)&peeraddr, peerlen)) == -1) {
 			perror("sendto");
 			close(sockfd);
 			exit(1);
