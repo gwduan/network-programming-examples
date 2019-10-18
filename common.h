@@ -7,4 +7,7 @@ extern ssize_t writen(int fd, void *buf, size_t len);
 extern int do_server(int connfd);
 extern int do_client(int connfd);
 
+extern int set_nonblocking(int fd);
+extern int set_blocking(int fd);
+
 #endif
