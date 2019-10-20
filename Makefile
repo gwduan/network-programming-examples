@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -O -Wall -W -pedantic
 
-TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept
+TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect
 
 all:$(TARGETS)
 
@@ -14,6 +14,7 @@ unixstreamclient: unixstreamclient.o common.o data.o
 unixdgramclient: unixdgramclient.o
 unixdgramserver: unixdgramserver.o
 tcp4server-nonblock-accept: tcp4server-nonblock-accept.o common.o data.o
+tcp4client-nonblock-connect: tcp4client-nonblock-connect.o common.o data.o
 
 .PHONY: clean
 

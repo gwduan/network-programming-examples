@@ -19,3 +19,4 @@ Build tools: gcc, gmake
 |unixdgramserver |basic unix domain datagram server|
 |unixdgramclient |basic unix domain datagram client|
 |tcp4server-nonblock-accept |tcp server using nonblocking accept (ipv4 version)|
+|tcp4client-nonblock-connect |tcp client using nonblocking connect (ipv4 version)|
