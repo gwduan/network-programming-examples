@@ -109,3 +109,107 @@ int set_blocking(int fd)
 
 	return 0;
 }
+
+ssize_t readn_nonblock(int fd, void *buf, size_t len)
+{
+	char *ptr;
+	size_t nleft;
+	ssize_t nread;
+	fd_set readset;
+
+	ptr = buf;
+	nleft = len;
+	while (nleft) {
+		FD_ZERO(&readset);
+		FD_SET(fd, &readset);
+		switch(select(fd + 1, &readset, NULL, NULL, NULL)) {
+		case -1:
+			if (errno == EINTR)
+				continue;
+
+			perror("select");
+			return -1;
+		case 0:
+			fprintf(stderr, "select time out!\n");
+			return -1;
+		}
+
+		if ((nread = recv(fd, ptr, nleft, 0)) == -1) {
+			if (errno == EINTR || errno == EWOULDBLOCK
+					|| errno == EAGAIN)
+				continue;
+			else {
+				perror("recv");
+				return -1;
+			}
+		} else if (!nread)
+			break;
+
+#ifdef DEBUG
+		fprintf(stdout, "%ld recved\n", nread);
+#endif
+		nleft -= nread;
+		ptr += nread;
+	}
+
+	return len - nleft;
+}
+
+ssize_t writen_nonblock(int fd, void *buf, size_t len)
+{
+	char *ptr;
+	size_t nleft;
+	ssize_t nwritten;
+	struct sigaction act, oact;
+	fd_set writeset;
+
+	act.sa_handler = SIG_IGN;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+	if (sigaction(SIGPIPE, &act, &oact) == -1) {
+		perror("sigaction");
+		return -1;
+	}
+
+	ptr = buf;
+	nleft = len;
+	while (nleft) {
+		FD_ZERO(&writeset);
+		FD_SET(fd, &writeset);
+		switch(select(fd + 1, NULL, &writeset, NULL, NULL)) {
+		case -1:
+			if (errno == EINTR)
+				continue;
+
+			perror("select");
+			sigaction(SIGPIPE, &oact, NULL);
+			return -1;
+		case 0:
+			fprintf(stderr, "time out!\n");
+			sigaction(SIGPIPE, &oact, NULL);
+			return -1;
+
+		}
+
+		if ((nwritten = send(fd, ptr, nleft, 0)) == -1) {
+			if (errno == EINTR || errno == EWOULDBLOCK
+					|| errno == EAGAIN)
+				continue;
+			else {
+				perror("send");
+				sigaction(SIGPIPE, &oact, NULL);
+				return -1;
+			}
+		}
+
+#ifdef DEBUG
+		fprintf(stdout, "%ld sended\n", nwritten);
+#endif
+		nleft -= nwritten;
+		ptr += nwritten;
+	}
+
+	sigaction(SIGPIPE, &oact, NULL);
+
+	return len;
+}
