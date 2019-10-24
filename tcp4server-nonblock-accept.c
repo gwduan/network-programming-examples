@@ -84,8 +84,8 @@ int main(void)
 				exit(1);
 			}
 
-			if (set_blocking(connfd) == -1) {
-				perror("set_blocking");
+			if (set_nonblocking(connfd) == -1) {
+				perror("set_nonblocking");
 				close(connfd);
 				continue;
 			}

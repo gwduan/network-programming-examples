@@ -58,7 +58,7 @@ int main(void)
 	}
 
 	/* do something else */
-	
+
 	/* wait connection to establish */
 	if (!connected) {
 		fprintf(stdout, "wait connection to establish.\n");
@@ -91,12 +91,6 @@ int main(void)
 			close(sockfd);
 			exit(1);
 		}
-	}
-
-	if (set_blocking(sockfd) == -1) {
-		perror("set_blocking");
-		close(sockfd);
-		exit(1);
 	}
 
 	do_client(sockfd);
