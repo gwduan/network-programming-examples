@@ -21,3 +21,4 @@ Build tools: gcc, gmake
 |tcp4server-nonblock-accept |tcp server using nonblocking accept (ipv4 version)|
 |tcp4client-nonblock-connect |tcp client using nonblocking connect (ipv4 version)|
 |tcp4server-poll |tcp server using poll i/o multiplexing (ipv4 version)|
+|tcp4server-epoll |tcp server using epoll i/o event facility (ipv4 version)|
