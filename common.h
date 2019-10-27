@@ -12,5 +12,7 @@ extern int set_blocking(int fd);
 
 extern ssize_t readn_nonblock(int fd, void *buf, size_t len);
 extern ssize_t writen_nonblock(int fd, void *buf, size_t len);
+extern ssize_t readn_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *timeout);
+extern ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *timeout);
 
 #endif

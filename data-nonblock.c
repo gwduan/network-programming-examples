@@ -8,6 +8,7 @@ int do_server(int connfd)
 	char buf[1024 + 4 + 1];
 	int len;
 	int nread;
+	struct timeval timeout;
 
 	len = 4;
 	if ((nread = readn_nonblock(connfd, buf, len)) == -1) {
@@ -25,14 +26,17 @@ int do_server(int connfd)
 	}
 	fprintf(stdout, "recv header = [%s].\n", buf);
 
-	if ((nread = readn_nonblock(connfd, buf + 4, len)) == -1) {
-		fprintf(stderr, "readn_nonblock error!\n");
+	timeout.tv_sec = 5;
+	timeout.tv_usec = 0;
+	if ((nread = readn_nonblock_timeout(connfd, buf + 4, len,
+					&timeout)) == -1) {
+		fprintf(stderr, "readn_nonblock_timeout error!\n");
 		return -1;
 	}
 	buf[4 + nread] = '\0';
 	fprintf(stdout, "recv content[%d] = [%s].\n", nread, buf + 4);
 
-	if (writen_nonblock(connfd, buf, len + 4) == -1) {
+	if (writen_nonblock_timeout(connfd, buf, len + 4, &timeout) == -1) {
 		fprintf(stderr, "send error!\n");
 		return -1;
 	}
@@ -48,6 +52,7 @@ int do_client(int connfd)
 	int len;
 	int nread;
 	char *snd_msg = "hello, world!";
+	struct timeval timeout;
 
 	strncpy(buf + 4, snd_msg, sizeof(buf) - 4 - 1);
 	buf[sizeof(buf) - 1] = '\0';
@@ -78,7 +83,10 @@ int do_client(int connfd)
 	}
 	fprintf(stdout, "recv header = [%s].\n", buf);
 
-	if ((nread = readn_nonblock(connfd, buf + 4, len)) == -1) {
+	timeout.tv_sec = 5;
+	timeout.tv_usec = 0;
+	if ((nread = readn_nonblock_timeout(connfd, buf + 4, len,
+					&timeout)) == -1) {
 		fprintf(stderr, "recv error!\n");
 		return -1;
 	}
