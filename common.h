@@ -15,4 +15,7 @@ extern ssize_t writen_nonblock(int fd, void *buf, size_t len);
 extern ssize_t readn_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *timeout);
 extern ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *timeout);
 
+extern int send_fd(int sockfd, int sendfd);
+extern int recv_fd(int sockfd, int *recvfd);
+
 #endif

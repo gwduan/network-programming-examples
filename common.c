@@ -371,3 +371,96 @@ ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *t
 
 	return len;
 }
+
+int send_fd(int sockfd, int sendfd)
+{
+	struct msghdr msg;
+	char iobuf[1];
+	struct iovec iov;
+	union {
+		char buf[CMSG_SPACE(sizeof(int))];
+		struct cmsghdr align;
+	} u;
+	struct cmsghdr *cmsg;
+
+
+	msg.msg_name = NULL;
+	msg.msg_namelen = 0;
+
+	iov.iov_base = iobuf;
+	iov.iov_len = sizeof(iobuf);
+	msg.msg_iov = &iov;
+	msg.msg_iovlen = 1;
+
+	msg.msg_control = u.buf;
+	msg.msg_controllen = sizeof(u.buf);
+
+	cmsg = CMSG_FIRSTHDR(&msg);
+	cmsg->cmsg_level = SOL_SOCKET;
+	cmsg->cmsg_type = SCM_RIGHTS;
+	cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+	*((int *)CMSG_DATA(cmsg)) = sendfd;
+
+	while (1) {
+		if (sendmsg(sockfd, &msg, 0) == -1) {
+			if (errno == EINTR)
+				continue;
+
+			perror("sendmsg");
+			return -1;
+		}
+
+		break;
+	}
+
+	return 0;
+}
+
+int recv_fd(int sockfd, int *recvfd)
+{
+	struct msghdr msg;
+	char iobuf[1];
+	struct iovec iov;
+	union {
+		char buf[CMSG_SPACE(sizeof(int))];
+		struct cmsghdr align;
+	} u;
+	struct cmsghdr *cmsg;
+
+
+	msg.msg_name = NULL;
+	msg.msg_namelen = 0;
+
+	iov.iov_base = iobuf;
+	iov.iov_len = sizeof(iobuf);
+	msg.msg_iov = &iov;
+	msg.msg_iovlen = 1;
+
+	msg.msg_control = u.buf;
+	msg.msg_controllen = sizeof(u.buf);
+
+	while (1) {
+		if (recvmsg(sockfd, &msg, 0) == -1) {
+			if (errno == EINTR)
+				continue;
+
+			perror("recvmsg");
+			return -1;
+		}
+
+		break;
+	}
+
+	if ((cmsg = CMSG_FIRSTHDR(&msg))
+			&& cmsg->cmsg_level == SOL_SOCKET
+			&& cmsg->cmsg_type == SCM_RIGHTS
+			&& cmsg->cmsg_len == CMSG_LEN(sizeof(int))) {
+		*recvfd = *((int *)CMSG_DATA(cmsg));
+	} else {
+		fprintf(stderr, "send format wrong!");
+		return -1;
+	}
+
+
+	return 0;
+}
