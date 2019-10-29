@@ -461,6 +461,5 @@ int recv_fd(int sockfd, int *recvfd)
 		return -1;
 	}
 
-
 	return 0;
 }
