@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <sys/epoll.h>
 #include <string.h>
+#include <signal.h>
 #include "common.h"
 
 #define LISTENQ 1024
@@ -58,6 +59,7 @@ static int do_echo(int sockfd)
 	ssize_t nwritten;
 	char *ptr;
 	int peer_closed = 0;
+	struct sigaction act, oact;
 
 	ptr = buf;
 	nleft = sizeof(buf);
@@ -100,6 +102,15 @@ static int do_echo(int sockfd)
 	buf[sizeof(buf) - nleft] = '\0';
 	fprintf(stdout, "fd[%d] recv message: [%s].\n", sockfd, buf);
 
+	act.sa_handler = SIG_IGN;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+	if (sigaction(SIGPIPE, &act, &oact) == -1) {
+		perror("sigaction");
+		close(sockfd);
+		return -1;
+	}
+
 	ptr = buf;
 	nleft = strlen(buf);
 	fprintf(stdout, "fd[%d] send message: [", sockfd);
@@ -112,6 +123,7 @@ static int do_echo(int sockfd)
 				break;
 
 			perror("send");
+			sigaction(SIGPIPE, &oact, NULL);
 			close(sockfd);
 			return -1;
 		}
@@ -121,6 +133,8 @@ static int do_echo(int sockfd)
 		ptr += nwritten;
 	}
 	fprintf(stdout, "].\n");
+
+	sigaction(SIGPIPE, &oact, NULL);
 
 	if (nleft)
 		fprintf(stderr, "remain message discard[%ld bytes]!\n", nleft);
