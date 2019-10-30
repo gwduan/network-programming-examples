@@ -107,8 +107,6 @@ int main(void)
 	int i;
 	int ready_num;
 
-
-
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("socket");
 		exit(1);
