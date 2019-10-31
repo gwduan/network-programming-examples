@@ -22,5 +22,6 @@ Build tools: gcc, gmake
 |tcp4client-nonblock-connect |tcp client using nonblocking connect (ipv4 version)|
 |tcp4server-poll |tcp server using poll i/o multiplexing (ipv4 version)|
 |tcp4server-epoll |tcp server using epoll i/o event facility (ipv4 version)|
+|tcp4server-select |tcp server using select i/o multiplexing (ipv4 version)|
 |unixstreamserver-tranfd |unix domain stream server receiving file descriptor |
 |unixstreamclient-tranfd |unix domain stream client sending file descriptor |
