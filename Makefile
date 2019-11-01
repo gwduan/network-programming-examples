@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-g -O -Wall -W -pedantic
 #CFLAGS=-g -O -Wall -W -pedantic -DDEBUG
 
-TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect tcp4server-poll tcp4server-epoll tcp4server-select unixstreamserver-tranfd unixstreamclient-tranfd
+TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect tcp4server-poll tcp4server-epoll tcp4server-select unixstreamserver-tranfd unixstreamclient-tranfd tcp4server-fork
 
 all:$(TARGETS)
 
@@ -23,6 +23,8 @@ tcp4server-select: tcp4server-select.o common.o
 unixstreamserver-tranfd: unixstreamserver.o common.o data-tranfd.o
 	$(CC) -o $@ $^
 unixstreamclient-tranfd: unixstreamclient.o common.o data-tranfd.o
+	$(CC) -o $@ $^
+tcp4server-fork: tcp4server.o common.o data-fork.o
 	$(CC) -o $@ $^
 
 .PHONY: clean
