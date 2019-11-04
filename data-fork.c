@@ -9,25 +9,11 @@ static void sigchld_handler(int sig)
 {
 	int pid;
 	int status;
+	char buf[256];
 
 	while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-		fprintf(stdout, "pid[%d] ", pid);
-		if (WIFEXITED(status)) {
-			fprintf(stdout, "exited, status=%d.\n",
-					WEXITSTATUS(status));
-		} else if (WIFSIGNALED(status)) {
-			fprintf(stdout, "killed by signal %d%s\n",
-					WTERMSIG(status),
-#ifdef WCOREDUMP
-					WCOREDUMP(status) ? " (core dump)."
-							: ".");
-#endif
-		} else if (WIFSTOPPED(status)) {
-			fprintf(stdout, "stopped by signal %d.\n",
-					WSTOPSIG(status));
-		} else if (WIFCONTINUED(status)) {
-			fprintf(stdout, "continued.\n");
-		}
+		fprintf(stdout, "pid[%d] %s.\n", pid,
+				status_str(status, buf, sizeof(buf)));
 	}
 
 	return;

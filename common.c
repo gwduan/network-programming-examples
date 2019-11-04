@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <sys/wait.h>
 #include "common.h"
 
 ssize_t readn(int fd, void *buf, size_t len)
@@ -642,4 +643,29 @@ int do_send_recv_nonblock(int connfd)
 	fprintf(stdout, "recv content[%d] = [%s].\n", nread, buf + 4);
 
 	return 0;
+}
+
+char *status_str(int status, char *buf, size_t len)
+{
+	if (!buf || !len)
+		return NULL;
+
+	if (WIFEXITED(status)) {
+		snprintf(buf, len, "exited, status=%d", WEXITSTATUS(status));
+	} else if (WIFSIGNALED(status)) {
+		snprintf(buf, len, "killed by signal %d%s",
+				WTERMSIG(status),
+#ifdef WCOREDUMP
+				WCOREDUMP(status) ? " (core dump)" : ""
+#else
+				""
+#endif
+				);
+	} else if (WIFSTOPPED(status)) {
+		snprintf(buf, len, "stopped by signal %d", WSTOPSIG(status));
+	} else if (WIFCONTINUED(status)) {
+		snprintf(buf, len, "continued");
+	}
+
+	return buf;
 }

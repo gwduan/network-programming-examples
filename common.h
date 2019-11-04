@@ -22,4 +22,6 @@ extern ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct tim
 extern int send_fd(int sockfd, int sendfd);
 extern int recv_fd(int sockfd, int *recvfd);
 
+extern char *status_str(int status, char *buf, size_t len);
+
 #endif
