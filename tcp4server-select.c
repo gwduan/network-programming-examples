@@ -148,15 +148,10 @@ int do_send(int sockfd, struct conninfo *conn_info)
 	size_t nleft;
 	ssize_t nwritten;
 	char *ptr;
-	struct sigaction act, oact;
+	struct sigaction oact;
 
-	act.sa_handler = SIG_IGN;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-	if (sigaction(SIGPIPE, &act, &oact) == -1) {
-		perror("sigaction");
+	if (set_sig_handler(SIGPIPE, SIG_IGN, &oact) == -1)
 		return -1;
-	}
 
 	ptr = conn_info->buf + conn_info->data_start;
 	nleft = conn_info->data_end - conn_info->data_start;

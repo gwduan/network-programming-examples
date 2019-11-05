@@ -42,15 +42,10 @@ ssize_t writen(int fd, void *buf, size_t len)
 	size_t nleft;
 	ssize_t nwritten;
 
-	struct sigaction act, oact;
+	struct sigaction oact;
 
-	act.sa_handler = SIG_IGN;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-	if (sigaction(SIGPIPE, &act, &oact) == -1) {
-		perror("sigaction");
+	if (set_sig_handler(SIGPIPE, SIG_IGN, &oact) == -1)
 		return -1;
-	}
 
 	ptr = buf;
 	nleft = len;
@@ -164,16 +159,11 @@ ssize_t writen_nonblock(int fd, void *buf, size_t len)
 	char *ptr;
 	size_t nleft;
 	ssize_t nwritten;
-	struct sigaction act, oact;
+	struct sigaction oact;
 	fd_set writeset;
 
-	act.sa_handler = SIG_IGN;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-	if (sigaction(SIGPIPE, &act, &oact) == -1) {
-		perror("sigaction");
+	if (set_sig_handler(SIGPIPE, SIG_IGN, &oact) == -1)
 		return -1;
-	}
 
 	ptr = buf;
 	nleft = len;
@@ -295,7 +285,7 @@ ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *t
 	char *ptr;
 	size_t nleft;
 	ssize_t nwritten;
-	struct sigaction act, oact;
+	struct sigaction oact;
 	fd_set writeset;
 	long total_usec;
 	struct timeval tv_start, tv_end, tv_curr;
@@ -304,13 +294,8 @@ ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *t
 	if (!timeout)
 		return writen_nonblock(fd, buf, len);
 
-	act.sa_handler = SIG_IGN;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-	if (sigaction(SIGPIPE, &act, &oact) == -1) {
-		perror("sigaction");
+	if (set_sig_handler(SIGPIPE, SIG_IGN, &oact) == -1)
 		return -1;
-	}
 
 	total_usec = timeout->tv_sec * 1000000 + timeout->tv_usec;
 	tv_curr = *timeout;
@@ -668,4 +653,20 @@ char *status_str(int status, char *buf, size_t len)
 	}
 
 	return buf;
+}
+
+int set_sig_handler(int sig, void (*func)(int), struct sigaction *oact)
+{
+	struct sigaction act;
+
+	act.sa_handler = func;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+
+	if (sigaction(sig, &act, oact) == -1) {
+		perror("sigaction");
+		return -1;
+	}
+
+	return 0;
 }

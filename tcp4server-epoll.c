@@ -59,7 +59,7 @@ static int do_echo(int sockfd)
 	ssize_t nwritten;
 	char *ptr;
 	int peer_closed = 0;
-	struct sigaction act, oact;
+	struct sigaction oact;
 
 	ptr = buf;
 	nleft = sizeof(buf);
@@ -102,11 +102,7 @@ static int do_echo(int sockfd)
 	buf[sizeof(buf) - nleft] = '\0';
 	fprintf(stdout, "fd[%d] recv message: [%s].\n", sockfd, buf);
 
-	act.sa_handler = SIG_IGN;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-	if (sigaction(SIGPIPE, &act, &oact) == -1) {
-		perror("sigaction");
+	if (set_sig_handler(SIGPIPE, SIG_IGN, &oact) == -1) {
 		close(sockfd);
 		return -1;
 	}

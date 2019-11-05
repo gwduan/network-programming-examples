@@ -22,17 +22,11 @@ static void sigchld_handler(int sig)
 int do_server(int connfd)
 {
 	static int first = 1;
-	struct sigaction act;
 	int pid;
 
 	if (first) {
-		act.sa_handler = sigchld_handler;
-		sigemptyset(&act.sa_mask);
-		act.sa_flags = 0;
-		if (sigaction(SIGCHLD, &act, NULL) == -1) {
-			perror("sigaction");
+		if (set_sig_handler(SIGCHLD, sigchld_handler, NULL) == -1)
 			return -1;
-		}
 
 		first = 0;
 	}
