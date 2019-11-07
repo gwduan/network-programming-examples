@@ -362,6 +362,7 @@ ssize_t writen_nonblock_timeout(int fd, void *buf, size_t len, struct timeval *t
 
 int send_fd(int sockfd, int sendfd)
 {
+	struct sigaction oact;
 	struct msghdr msg;
 	char iobuf[1];
 	struct iovec iov;
@@ -371,6 +372,8 @@ int send_fd(int sockfd, int sendfd)
 	} u;
 	struct cmsghdr *cmsg;
 
+	if (set_sig_handler(SIGPIPE, SIG_IGN, &oact) == -1)
+		return -1;
 
 	msg.msg_name = NULL;
 	msg.msg_namelen = 0;
@@ -395,11 +398,14 @@ int send_fd(int sockfd, int sendfd)
 				continue;
 
 			perror("sendmsg");
+			sigaction(SIGPIPE, &oact, NULL);
 			return -1;
 		}
 
 		break;
 	}
+
+	sigaction(SIGPIPE, &oact, NULL);
 
 	return 0;
 }
@@ -414,6 +420,7 @@ int recv_fd(int sockfd, int *recvfd)
 		struct cmsghdr align;
 	} u;
 	struct cmsghdr *cmsg;
+	int ret;
 
 
 	msg.msg_name = NULL;
@@ -428,11 +435,14 @@ int recv_fd(int sockfd, int *recvfd)
 	msg.msg_controllen = sizeof(u.buf);
 
 	while (1) {
-		if (recvmsg(sockfd, &msg, 0) == -1) {
+		if ((ret = recvmsg(sockfd, &msg, 0)) == -1) {
 			if (errno == EINTR)
 				continue;
 
 			perror("recvmsg");
+			return -1;
+		} else if (!ret) {
+			fprintf(stderr, "peer closed!");
 			return -1;
 		}
 
