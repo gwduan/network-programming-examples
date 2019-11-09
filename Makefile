@@ -19,13 +19,12 @@ tcp4client-nonblock-connect: tcp4client-nonblock-connect.o common.o data-nonbloc
 tcp4server-poll: tcp4server-poll.o common.o
 tcp4server-epoll: tcp4server-epoll.o common.o
 tcp4server-select: tcp4server-select.o common.o
+tcp4server-fork: tcp4server-fork.o common.o data.o
 tcp4server-process-pool: tcp4server-process-pool.o common.o data.o
 
 unixstreamserver-tranfd: unixstreamserver.o common.o data-tranfd.o
 	$(CC) -o $@ $^
 unixstreamclient-tranfd: unixstreamclient.o common.o data-tranfd.o
-	$(CC) -o $@ $^
-tcp4server-fork: tcp4server.o common.o data-fork.o
 	$(CC) -o $@ $^
 
 .PHONY: clean

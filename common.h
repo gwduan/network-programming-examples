@@ -6,10 +6,6 @@
 extern ssize_t readn(int fd, void *buf, size_t len);
 extern ssize_t writen(int fd, void *buf, size_t len);
 
-extern int do_send_recv(int connfd);
-extern int do_send_recv_nonblock(int connfd);
-extern int do_recv_send(int connfd);
-extern int do_recv_send_nonblock(int connfd);
 extern int do_server(int connfd);
 extern int do_client(int connfd);
 
