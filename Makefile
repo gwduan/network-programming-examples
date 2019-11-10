@@ -1,8 +1,9 @@
 CC=gcc
 CFLAGS=-g -O -Wall -W -pedantic
+LDFLAGS=-pthread
 #CFLAGS=-g -O -Wall -W -pedantic -DDEBUG
 
-TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect tcp4server-poll tcp4server-epoll tcp4server-select unixstreamserver-tranfd unixstreamclient-tranfd tcp4server-fork tcp4server-process-pool
+TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect tcp4server-poll tcp4server-epoll tcp4server-select unixstreamserver-tranfd unixstreamclient-tranfd tcp4server-fork tcp4server-process-pool tcp4server-pthread
 
 all:$(TARGETS)
 
@@ -21,6 +22,7 @@ tcp4server-epoll: tcp4server-epoll.o common.o
 tcp4server-select: tcp4server-select.o common.o
 tcp4server-fork: tcp4server-fork.o common.o data.o
 tcp4server-process-pool: tcp4server-process-pool.o common.o data.o
+tcp4server-pthread: tcp4server-pthread.o common.o data.o
 
 unixstreamserver-tranfd: unixstreamserver.o common.o data-tranfd.o
 	$(CC) -o $@ $^
