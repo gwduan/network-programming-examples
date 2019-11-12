@@ -26,5 +26,6 @@ Build tools: gcc, gmake
 |tcp4server-fork |tcp server using fork (ipv4 version) |
 |tcp4server-process-pool |tcp server using preforked process pool (ipv4 version) |
 |tcp4server-pthread |tcp server using pthread (ipv4 version) |
+|tcp4server-pthread-pool |tcp server using prealloced pthread pool (ipv4 version) |
 |unixstreamserver-tranfd |unix domain stream server receiving file descriptor |
 |unixstreamclient-tranfd |unix domain stream client sending file descriptor |
