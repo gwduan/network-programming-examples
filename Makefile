@@ -3,7 +3,7 @@ CFLAGS=-g -O -Wall -W -pedantic
 LDFLAGS=-pthread
 #CFLAGS=-g -O -Wall -W -pedantic -DDEBUG
 
-TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect tcp4server-poll tcp4server-epoll tcp4server-select unixstreamserver-tranfd unixstreamclient-tranfd tcp4server-fork tcp4server-process-pool tcp4server-pthread tcp4server-pthread-pool
+TARGETS=tcp4server tcp4client udp4server udp4client unixdgramclient unixdgramserver unixstreamserver unixstreamclient tcp4server-nonblock-accept tcp4client-nonblock-connect tcp4server-poll tcp4server-epoll tcp4server-select unixstreamserver-tranfd unixstreamclient-tranfd tcp4server-fork tcp4server-process-pool tcp4server-pthread tcp4server-pthread-pool tcp4server-slowrecv tcp4client-fastsend
 
 all:$(TARGETS)
 
@@ -28,6 +28,11 @@ tcp4server-pthread-pool: tcp4server-pthread-pool.o common.o data.o
 unixstreamserver-tranfd: unixstreamserver.o common.o data-tranfd.o
 	$(CC) -o $@ $^
 unixstreamclient-tranfd: unixstreamclient.o common.o data-tranfd.o
+	$(CC) -o $@ $^
+
+tcp4server-slowrecv: tcp4server.o common.o data-test.o
+	$(CC) -o $@ $^
+tcp4client-fastsend: tcp4client.o common.o data-test.o
 	$(CC) -o $@ $^
 
 .PHONY: clean
