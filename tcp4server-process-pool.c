@@ -247,7 +247,7 @@ int main(void)
 						&peerlen)) == -1) {
 			if (errno == EINTR)
 				continue;
- 
+
 			perror("accept");
 			close(sockfd);
 			stop_all_children(pooltab, POOL_SIZE);
