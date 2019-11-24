@@ -16,6 +16,8 @@ Build tools: gcc, gmake
 |tcp6client |basic tcp client (ipv6 version) |
 |udp4server |basic udp server (ipv4 version) |
 |udp4client |basic udp client (ipv4 version) |
+|udp6server |basic udp server (ipv6 version) |
+|udp6client |basic udp client (ipv6 version) |
 |unixstreamserver |basic unix domain stream server |
 |unixstreamclient |basic unix domain stream client |
 |unixdgramserver |basic unix domain datagram server |
