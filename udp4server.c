@@ -16,7 +16,7 @@ int main(void)
 	struct sockaddr_in peeraddr;
 	socklen_t peerlen;
 	char recvbuf[1024 + 1];
-	char sendbuf[1024 + 1];
+	char sendbuf[1024 + 4 + 1];
 	ssize_t nread;
 	int ret;
 
